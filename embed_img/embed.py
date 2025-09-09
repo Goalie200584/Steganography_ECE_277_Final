@@ -25,7 +25,7 @@ def embed_message(text_bin:list, img_bin:list) -> list:
             #4. Tracks the index we are on for the img binary
             if RGB_count == 2:
                 RGB_count = 0
-                if pixel_count == 927:
+                if pixel_count == len(img_bin[0])-1:
                     pixel_count = 0
                     row_count += 1
                 else:
