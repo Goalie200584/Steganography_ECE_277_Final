@@ -12,7 +12,7 @@ def embed_message(text_bin:list, img_bin:list) -> list:
     #1.5. Encodes the end of my 
     for e, i in enumerate(text_bin):
         if e + 1 == len(text_bin):
-            i += "0000000000"
+            i += "1010101010101010"
 
         i = list(i)
         del i[1]
@@ -36,5 +36,6 @@ def embed_message(text_bin:list, img_bin:list) -> list:
             
             
             total_count += 1
+        
     return img_bin
 

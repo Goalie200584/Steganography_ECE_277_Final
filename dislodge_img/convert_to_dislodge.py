@@ -7,15 +7,17 @@ def convert_img_to_binary(img_path:str)-> list:
     Outputs:  
     """
     img = Image.open(img_path)
-    img = np.array(img.conert("RGB"))
+    img = np.array(img.convert("RGB"))
 
-    bin_arr = []
+    
 
-    for c,i in enumerate(img):
-        bin_arr.append([])
-        for e, x in enumerate(i):
-            bin_arr[c].append([])
-            for z in x:
-                bin_arr[c][e].append([])
-                bin_arr[c][e].append(f"{z:08b}")
-    print(bin_arr)
+    output_binary = []
+    for i in range(len(img)):
+        output_binary.append([])      
+        for c, x in enumerate(img[i]):
+            output_binary[i].append([])  
+            for z in img[i][c]: output_binary[i-1][c].append(f"{z:08b}") 
+    
+    return output_binary
+
+    
