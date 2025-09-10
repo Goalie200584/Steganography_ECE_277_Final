@@ -19,7 +19,7 @@ def save_img(img_path:str, img_bin:list):
             RGB_rows[i].append([])  
             for z in img_bin[i][c]: RGB_rows[i][c].append(int(z, 2)) 
         original[i] = np.array(RGB_rows[i])
-        
+    
     embedded_image = Image.fromarray(original)
     embedded_image.save("./images/embedded_image.png")
     

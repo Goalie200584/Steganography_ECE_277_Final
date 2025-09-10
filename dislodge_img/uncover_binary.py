@@ -11,6 +11,4 @@ def uncover_info(img_bin):
                         return bin_message
                     else:
                         bin_message.append(current_message)
-                        current_message = ""
-    print(bin_message)
-    print(len(bin_message))
+                        current_message = f"{bin[-1]}"
