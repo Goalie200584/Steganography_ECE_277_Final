@@ -8,7 +8,6 @@ import embed_img.save_img as save_img
 import dislodge_img.convert_to_dislodge as convert_to_dislodge
 import dislodge_img.uncover_binary as uncover_binary
 import dislodge_img.convert_bin_to_text as convert_bin_to_text
-import time
 
 # Creates Class og StegApp to Call from main.py
 class StegApp:
