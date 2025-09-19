@@ -8,7 +8,9 @@ import embed_img.save_img as save_img
 import dislodge_img.convert_to_dislodge as convert_to_dislodge
 import dislodge_img.uncover_binary as uncover_binary
 import dislodge_img.convert_bin_to_text as convert_bin_to_text
+import encrypt_and_decrypt
 
+secret_key = "PYTHONRULES"
 # Creates Class og StegApp to Call from main.py
 class StegApp:
     # Initalizes the class StegApp; Sets up inital root, container and packs the container into our root GUI
@@ -81,7 +83,7 @@ class EncodePage(tk.Frame):
         super().__init__(parent)
         self.controller = controller
         
-        back_button = tk.Button(self, text="Back", command=lambda: self.controller.show_frame("HomePage"))
+        back_button = tk.Button(self, text="Back", command=self.go_back)
         back_button.pack(side=tk.TOP, anchor=tk.W)
 
         label = tk.Label(self, text="Encode Page")
@@ -103,7 +105,6 @@ class EncodePage(tk.Frame):
 
         self.done_label = tk.Label(self, text="Embedding Complete! Returning to HomePage")
         self.no_image_selected = tk.Label(self, text="No Image Selected!")
-        self.no_image_selected.pack_forget()
 
     def embed_secret(self):
         '''
@@ -117,6 +118,7 @@ class EncodePage(tk.Frame):
         else:
             self.no_image_selected.pack_forget()
             text = self.text_box.get("1.0", tk.END)
+            text = encrypt_and_decrypt.XOR_cipher(text, secret_key)
             original_img_path = self.controller.file_path_var.get()
             text_bin, text_length = get_text.convert_text_to_binary(text)
             num_of_rows, img_bin = img_to_binary.convert_img_to_binary(original_img_path, text_length)   
@@ -134,6 +136,11 @@ class EncodePage(tk.Frame):
         self.done_label.pack_forget()
         self.controller.show_frame("HomePage")
 
+    def go_back(self):
+        self.controller.show_frame("HomePage")
+        self.no_image_selected.pack_forget()
+
+
 
 #Class for DislodgePage
 class DislodgePage(tk.Frame):
@@ -143,7 +150,7 @@ class DislodgePage(tk.Frame):
         self.controller = controller
         self.dislodged_message = tk.StringVar()
         
-        back_button = tk.Button(self, text="Back", command=lambda: self.controller.show_frame("HomePage"))
+        back_button = tk.Button(self, text="Back", command=self.go_back)
         back_button.pack(side=tk.TOP, anchor=tk.W)
 
         label = tk.Label(self, text="Dislodge Page")
@@ -179,7 +186,12 @@ class DislodgePage(tk.Frame):
             img_bin_decode = convert_to_dislodge.convert_img_to_binary(dislodge_path)
             bin_text = uncover_binary.uncover_info(img_bin_decode)
             decoded_message = convert_bin_to_text.convert_to_text(bin_text)
+            decoded_message = encrypt_and_decrypt.XOR_cipher(decoded_message, secret_key)
 
             self.dislodged_message.set(f"Decoded Message: {decoded_message}")
             self.decoded_message_label.pack()
 
+    
+    def go_back(self):
+        self.controller.show_frame("HomePage")
+        self.no_image_selected.pack_forget()
