@@ -9,6 +9,7 @@ import dislodge_img.convert_to_dislodge as convert_to_dislodge
 import dislodge_img.uncover_binary as uncover_binary
 import dislodge_img.convert_bin_to_text as convert_bin_to_text
 import encrypt_and_decrypt
+import embed_img.PSNR as PSNR
 
 secret_key = "PYTHONRULES"
 # Creates Class og StegApp to Call from main.py
@@ -105,6 +106,8 @@ class EncodePage(tk.Frame):
 
         self.done_label = tk.Label(self, text="Embedding Complete! Returning to HomePage")
         self.no_image_selected = tk.Label(self, text="No Image Selected!")
+        self.psnr_val = ""
+        
 
     def embed_secret(self):
         '''
@@ -123,9 +126,17 @@ class EncodePage(tk.Frame):
             text_bin, text_length = get_text.convert_text_to_binary(text)
             num_of_rows, img_bin = img_to_binary.convert_img_to_binary(original_img_path, text_length)   
             img_bin = embed.embed_message(text_bin, img_bin)
-            save_img.save_img(original_img_path, img_bin)
+            img_output_path = save_img.save_img(original_img_path, img_bin)
+
+            self.psnr_val = PSNR.get_psnr(original_img_path, img_output_path)
+            self.psnr_val = f"PSNR Value of: {round(self.psnr_val, 2)}%"
+
+            self.PSNR_lab = tk.Label(self, text=self.psnr_val)
+            
+            self.PSNR_lab.pack()
             self.done_label.pack()
-            self.after(1500, self.finish_embedding)
+            self.after(3000, self.finish_embedding)
+
     
     def finish_embedding(self):
         '''
@@ -134,6 +145,7 @@ class EncodePage(tk.Frame):
         Outputs: N/A 
         '''
         self.done_label.pack_forget()
+        self.PSNR_lab.pack_forget()
         self.controller.show_frame("HomePage")
 
     def go_back(self):

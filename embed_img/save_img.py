@@ -8,6 +8,7 @@ def save_img(img_path:str, img_bin:list):
         Inputs: img_path, img_binary
         Outputs: N/A
     '''
+
     # print(img_bin)
     #1. Convert rows from binary back to RGB
     original = Image.open(img_path)
@@ -21,6 +22,14 @@ def save_img(img_path:str, img_bin:list):
             for z in img_bin[row][pixel]: RGB_rows[row][pixel].append(int(z, 2)) 
         original[row] = list(RGB_rows[row])
     
+
+    temp_path = img_path.split("/")[:-1]
+    temp_path.append("embedded_img.png")
+    print(temp_path)
+    img_output_path = "/".join(temp_path)
+
     embedded_image = Image.fromarray(original)
-    embedded_image.save("./images/embedded_image.png")
+    embedded_image.save(img_output_path)
+
+    return img_output_path
     
