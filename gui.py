@@ -34,7 +34,7 @@ class StegApp:
         # Creates a loop to make different instances of each frame class, which allows us to use different
         # functions from the main StegApp class using self.controller.{function}()
         # as well as initalize each class of a page, so we can switch the them using a button
-        for F in (HomePage, EncodePage, DislodgePage):
+        for F in (HomePage, chooseEncodePage, textEncodePage, fileEmbedPage, DislodgePage):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
             self.frames[page_name] = frame
@@ -68,7 +68,7 @@ class HomePage(tk.Frame):
         label = tk.Label(self, text="Steganography Machine!")
         label.pack()
         embed_button = tk.Button(self, text="Embed Secret Message into PNG!",
-                                 command=lambda:controller.show_frame("EncodePage"))
+                                 command=lambda:controller.show_frame("chooseEncodePage"))
 
         dislodge_button = tk.Button(self, text="Dislodge Secret Message from PNG!", 
                                     command=lambda: self.controller.show_frame("DislodgePage"))
@@ -77,9 +77,29 @@ class HomePage(tk.Frame):
         dislodge_button.pack()
 
 
-# Class for our EncodePage
-class EncodePage(tk.Frame):
-    # Intializes the EncodePage by packing buttons, labels and a text box; as well as intializing the controller and parent class
+#Class for our EncodeChoosePage
+class chooseEncodePage(tk.Frame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
+
+        back_button = tk.Button(self, text="Back", command= lambda: self.controller.show_frame("HomePage"))
+        back_button.pack(side = tk.TOP, anchor = tk.W)
+
+        label = tk.Label(self, text="Choose Your Type of File to Embed")
+        label.pack(pady=10, padx=10)
+
+        text_button = tk.Button(self, text="Embed Text", command=lambda: self.controller.show_frame("textEncodePage"))
+        
+        PDF_button = tk.Button(self, text='Embed a PDF File', command=lambda: self.controller.show_frame("fileEmbedPage"))
+
+        text_button.pack()
+        PDF_button.pack() 
+
+
+# Class for our textEncodePage
+class textEncodePage(tk.Frame):
+    # Intializes the textEncodePage by packing buttons, labels and a text box; as well as intializing the controller and parent class
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
@@ -87,7 +107,7 @@ class EncodePage(tk.Frame):
         back_button = tk.Button(self, text="Back", command=self.go_back)
         back_button.pack(side=tk.TOP, anchor=tk.W)
 
-        label = tk.Label(self, text="Encode Page")
+        label = tk.Label(self, text="Text Encoding Page")
         label.pack(pady=10, padx=10)
 
         choose_file_button = tk.Button(self, text="Choose File!", command=self.controller.get_png_path)
@@ -149,9 +169,53 @@ class EncodePage(tk.Frame):
         self.controller.show_frame("HomePage")
 
     def go_back(self):
-        self.controller.show_frame("HomePage")
+        self.controller.show_frame("chooseEncodePage")
         self.no_image_selected.pack_forget()
 
+
+class fileEmbedPage(tk.Frame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
+        
+        self.no_file_selected = tk.Label(self, text="No File Selected!!")
+
+        back_button = tk.Button(self, text = "Back", command=self.go_back)
+        back_button.pack(side=tk.TOP, anchor=tk.W)
+
+        label = tk.Label(self, text="Embed a File! -> Supported files: *.pdf")
+        label.pack(pady=10, padx=10)
+
+        choose_file_button = tk.Button(self, text="Choose a File to Embed", command=self.choose_file)
+        choose_file_button.pack()
+        self.embed_file_path = tk.StringVar()
+        self.embed_file_path.set("No File Selected.")
+        fileLabel = tk.Label(self, textvariable=self.embed_file_path)
+        fileLabel.pack()
+
+        go_button = tk.Button(self, text="Go!", command=self.fileEmbed)
+        go_button.pack()
+
+    
+    def choose_file(self):
+        file_path = filedialog.askopenfilename(
+            title="Select a File",
+            initialdir = "./", 
+            filetypes=[("PDF Files", "*.pdf")]
+        )
+
+        if file_path:
+            self.embed_file_path.set(file_path)
+
+
+    def fileEmbed(self):
+        if self.embed_file_path.get() == "No File Selected.":
+            self.no_file_selected.pack()
+        else:
+            self.embed_file_path.pack_forget()
+    def go_back(self):
+        self.no_file_selected.pack_forget()
+        self.controller.show_frame("chooseEncodePage")
 
 
 #Class for DislodgePage
