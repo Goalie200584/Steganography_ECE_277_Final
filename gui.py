@@ -86,7 +86,7 @@ class chooseEncodePage(tk.Frame):
         back_button = tk.Button(self, text="Back", command= lambda: self.controller.show_frame("HomePage"))
         back_button.pack(side = tk.TOP, anchor = tk.W)
 
-        label = tk.Label(self, text="Choose Your Type of File to Embed")
+        label = tk.Label(self, text="Choose The Type of File You Want to Embed")
         label.pack(pady=10, padx=10)
 
         text_button = tk.Button(self, text="Embed Text", command=lambda: self.controller.show_frame("textEncodePage"))
@@ -109,6 +109,8 @@ class textEncodePage(tk.Frame):
 
         label = tk.Label(self, text="Text Encoding Page")
         label.pack(pady=10, padx=10)
+        choose_image_button = tk.Button(self, text="Choose the image you want to encode!", command = self.controller.get_png_path
+        choose_image_button.pack()            
 
         choose_file_button = tk.Button(self, text="Choose File!", command=self.controller.get_png_path)
         choose_file_button.pack()
