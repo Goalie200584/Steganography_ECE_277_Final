@@ -10,6 +10,7 @@ import dislodge_img.uncover_binary as uncover_binary
 import dislodge_img.convert_bin_to_text as convert_bin_to_text
 import encrypt_and_decrypt
 import embed_img.PSNR as PSNR
+from test import get_pdf_bytes
 
 secret_key = "PYTHONRULES"
 # Creates Class og StegApp to Call from main.py
@@ -109,7 +110,7 @@ class textEncodePage(tk.Frame):
 
         label = tk.Label(self, text="Text Encoding Page")
         label.pack(pady=10, padx=10)
-        choose_image_button = tk.Button(self, text="Choose the image you want to encode!", command = self.controller.get_png_path
+        choose_image_button = tk.Button(self, text="Choose the image you want to encode!", command = self.controller.get_png_path)
         choose_image_button.pack()            
 
         choose_file_button = tk.Button(self, text="Choose File!", command=self.controller.get_png_path)
@@ -198,7 +199,6 @@ class fileEmbedPage(tk.Frame):
         go_button = tk.Button(self, text="Go!", command=self.fileEmbed)
         go_button.pack()
 
-    
     def choose_file(self):
         file_path = filedialog.askopenfilename(
             title="Select a File",
@@ -214,7 +214,24 @@ class fileEmbedPage(tk.Frame):
         if self.embed_file_path.get() == "No File Selected.":
             self.no_file_selected.pack()
         else:
-            self.embed_file_path.pack_forget()
+            self.no_file_selected.pack_forget()
+            text = get_pdf_bytes()
+            text = encrypt_and_decrypt.XOR_cipher(text, secret_key)
+            original_img_path = self.controller.file_path_var.get()
+            text_bin, text_length = get_text.convert_text_to_binary(text)
+            num_of_rows, img_bin = img_to_binary.convert_img_to_binary(original_img_path, text_length)   
+            img_bin = embed.embed_message(text_bin, img_bin)
+            img_output_path = save_img.save_img(original_img_path, img_bin)
+
+            self.psnr_val = PSNR.get_psnr(original_img_path, img_output_path)
+            self.psnr_val = f"PSNR Value of: {round(self.psnr_val, 2)}%"
+
+            self.PSNR_lab = tk.Label(self, text=self.psnr_val)
+            
+            self.PSNR_lab.pack()
+            self.done_label.pack()
+            self.after(3000, self.finish_embedding)
+
     def go_back(self):
         self.no_file_selected.pack_forget()
         self.controller.show_frame("chooseEncodePage")
@@ -268,8 +285,10 @@ class DislodgePage(tk.Frame):
 
             self.dislodged_message.set(f"Decoded Message: {decoded_message}")
             self.decoded_message_label.pack()
+            print(decoded_message)
 
     
     def go_back(self):
         self.controller.show_frame("HomePage")
         self.no_image_selected.pack_forget()
+        self.decoded_message_label.pack_forget()
