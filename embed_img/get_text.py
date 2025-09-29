@@ -1,13 +1,3 @@
-def get_text() -> tuple:
-    '''
-        Retrieves the text that we need to encode
-        
-        Inputs: N/A
-        Outputs: binary_text, length_binary_text
-    '''
-    return input("What are the words/sentences you'd like to encode? ")
-
-
 def convert_text_to_binary(text) -> list:
     '''
         Converts text to binary utilizing ASCII

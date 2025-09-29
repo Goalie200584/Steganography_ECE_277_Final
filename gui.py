@@ -10,7 +10,7 @@ import dislodge_img.uncover_binary as uncover_binary
 import dislodge_img.convert_bin_to_text as convert_bin_to_text
 import encrypt_and_decrypt
 import embed_img.PSNR as PSNR
-from test import get_pdf_bytes
+import embed_img.PDF_to_binary as PDF_to_binary
 
 secret_key = "PYTHONRULES"
 # Creates Class og StegApp to Call from main.py
@@ -110,8 +110,7 @@ class textEncodePage(tk.Frame):
 
         label = tk.Label(self, text="Text Encoding Page")
         label.pack(pady=10, padx=10)
-        choose_image_button = tk.Button(self, text="Choose the image you want to encode!", command = self.controller.get_png_path)
-        choose_image_button.pack()            
+                  
 
         choose_file_button = tk.Button(self, text="Choose File!", command=self.controller.get_png_path)
         choose_file_button.pack()
@@ -180,7 +179,11 @@ class fileEmbedPage(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
-        
+        self.file_to_embed = tk.StringVar()
+        self.file_to_embed.set("No File Selected.")
+
+        self.controller.file_path_var.set("No File Selected.")
+
         self.no_file_selected = tk.Label(self, text="No File Selected!!")
 
         back_button = tk.Button(self, text = "Back", command=self.go_back)
@@ -189,11 +192,16 @@ class fileEmbedPage(tk.Frame):
         label = tk.Label(self, text="Embed a File! -> Supported files: *.pdf")
         label.pack(pady=10, padx=10)
 
+        choose_image_button = tk.Button(self, text="Choose the image you want to encode!", command = self.controller.get_png_path)
+        choose_image_button.pack()  
+
+        png_label = tk.Label(self, textvariable=self.controller.file_path_var)
+        png_label.pack()
+
         choose_file_button = tk.Button(self, text="Choose a File to Embed", command=self.choose_file)
         choose_file_button.pack()
-        self.embed_file_path = tk.StringVar()
-        self.embed_file_path.set("No File Selected.")
-        fileLabel = tk.Label(self, textvariable=self.embed_file_path)
+        
+        fileLabel = tk.Label(self, textvariable=self.file_to_embed)
         fileLabel.pack()
 
         go_button = tk.Button(self, text="Go!", command=self.fileEmbed)
@@ -202,35 +210,36 @@ class fileEmbedPage(tk.Frame):
     def choose_file(self):
         file_path = filedialog.askopenfilename(
             title="Select a File",
-            initialdir = "./", 
+            initialdir = "./PDFs", 
             filetypes=[("PDF Files", "*.pdf")]
         )
 
         if file_path:
-            self.embed_file_path.set(file_path)
+            self.file_to_embed.set(file_path)
 
 
     def fileEmbed(self):
-        if self.embed_file_path.get() == "No File Selected.":
+        if self.controller.file_path_var.get() == "No File Selected.":
             self.no_file_selected.pack()
+
         else:
+
             self.no_file_selected.pack_forget()
-            text = get_pdf_bytes()
-            text = encrypt_and_decrypt.XOR_cipher(text, secret_key)
-            original_img_path = self.controller.file_path_var.get()
-            text_bin, text_length = get_text.convert_text_to_binary(text)
-            num_of_rows, img_bin = img_to_binary.convert_img_to_binary(original_img_path, text_length)   
-            img_bin = embed.embed_message(text_bin, img_bin)
-            img_output_path = save_img.save_img(original_img_path, img_bin)
+            if self.file_to_embed.get().endswith(".pdf"):
+                text_bin, text_length = PDF_to_binary.get_pdf_bytes(self.file_to_embed.get())
+                original_img_path = self.controller.file_path_var.get()
+                num_of_rows, img_bin = img_to_binary.convert_img_to_binary(original_img_path, text_length)   
+                img_bin = embed.embed_message(text_bin, img_bin)
+                img_output_path = save_img.save_img(original_img_path, img_bin)
 
-            self.psnr_val = PSNR.get_psnr(original_img_path, img_output_path)
-            self.psnr_val = f"PSNR Value of: {round(self.psnr_val, 2)}%"
+                self.psnr_val = PSNR.get_psnr(original_img_path, img_output_path)
+                self.psnr_val = f"PSNR Value of: {round(self.psnr_val, 2)}%"
 
-            self.PSNR_lab = tk.Label(self, text=self.psnr_val)
-            
-            self.PSNR_lab.pack()
-            self.done_label.pack()
-            self.after(3000, self.finish_embedding)
+                self.PSNR_lab = tk.Label(self, text=self.psnr_val)
+                
+                self.PSNR_lab.pack()
+                self.done_label.pack()
+                self.after(3000, self.finish_embedding)
 
     def go_back(self):
         self.no_file_selected.pack_forget()
