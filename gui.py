@@ -238,10 +238,15 @@ class fileEmbedPage(tk.Frame):
                 self.psnr_val = f"PSNR Value of: {round(self.psnr_val, 2)}%"
 
                 self.PSNR_lab = tk.Label(self, text=self.psnr_val)
-                
+                self.done_label = tk.Label(self, text="Embedding Complete! Returning to HomePage")
                 self.PSNR_lab.pack()
                 self.done_label.pack()
                 self.after(3000, self.finish_embedding)
+
+    def finish_embedding(self):
+        self.done_label.pack_forget()
+        self.PSNR_lab.pack_forget()
+        self.controller.show_frame("HomePage")
 
     def go_back(self):
         self.no_file_selected.pack_forget()
@@ -255,6 +260,8 @@ class DislodgePage(tk.Frame):
         super().__init__(parent)
         self.controller = controller
         self.dislodged_message = tk.StringVar()
+        self.output_dir_string = tk.StringVar()
+        self.output_dir_string.set("No Output Directory Selected.")
         
         back_button = tk.Button(self, text="Back", command=self.go_back)
         back_button.pack(side=tk.TOP, anchor=tk.W)
@@ -264,15 +271,22 @@ class DislodgePage(tk.Frame):
         
         choose_file_button = tk.Button(self, text="Choose File!", command=self.controller.get_png_path)
         choose_file_button.pack()
-
+        
         
         file_label = tk.Label(self, textvariable=self.controller.file_path_var)
         file_label.pack()
-        
+
+        output_path_button = tk.Button(self, text="Select an Output Directory", command=self.output_dir)
+        output_path_button.pack()
+
+        output_dir_label = tk.Label(self, textvariable=self.output_dir_string)
+        output_dir_label.pack()
+
         go_button = tk.Button(self, text="Go!", command=self.dislodge_secret)
         go_button.pack()
 
         self.no_image_selected = tk.Label(self, text="No Image Selected!")
+        self.no_output_dir_selected = tk.Label(self, text="No Output Directory Selected.")
 
         self.decoded_message_label = tk.Label(self, textvariable=self.dislodged_message)
         self.decoded_message_label.pack_forget()
@@ -286,20 +300,25 @@ class DislodgePage(tk.Frame):
         '''
         if self.controller.file_path_var.get() == "No File Selected.":
             self.no_image_selected.pack()
+        elif self.output_dir_string.get() == "No Output Directory Selected.":
+            self.no_output_dir_selected.pack()
         else:
+            output_path = self.output_dir_string.get()
             self.no_image_selected.pack_forget()
+            self.no_output_dir_selected.pack_forget()
             dislodge_path = self.controller.file_path_var.get()
             img_bin_decode = convert_to_dislodge.convert_img_to_binary(dislodge_path)
             bin_text, file_type = uncover_binary.uncover_info(img_bin_decode)
+
             if file_type == "text":
                 decoded_message = convert_bin_to_text.convert_to_text(bin_text)
                 decoded_message = encrypt_and_decrypt.XOR_cipher(decoded_message, secret_key)
-                output_path = save_file.file_convert(decoded_message, file_type)
-                self.dislodged_message.set(f"Decoded Message: {decoded_message[:10]}... Please refer to {output_path} for the full text")
+                save_file.file_convert(decoded_message, output_path, file_type)
+                self.dislodged_message.set(f"Please refer to {output_path} for your secret Message")
                 self.decoded_message_label.pack()
 
             elif file_type in ["pdf"]:
-                output_path = save_file.file_convert(bin_text, file_type)
+                save_file.file_convert(bin_text, output_path, file_type)
                 self.dislodged_message.set(f"File saved as a {file_type} file. Please Reference {output_path}")
                 self.dislodged_message_label.pack()
             
@@ -310,3 +329,9 @@ class DislodgePage(tk.Frame):
         self.controller.show_frame("HomePage")
         self.no_image_selected.pack_forget()
         self.decoded_message_label.pack_forget()
+        self.output_dir_string.se("No Output Directory Selected.")
+
+
+    def output_dir(self):
+        self.output_dir_string.set(filedialog.askdirectory(title="Select a Directory", initialdir="./output_files"))
+        

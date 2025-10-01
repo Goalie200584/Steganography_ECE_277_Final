@@ -1,20 +1,24 @@
-def file_convert(decoded_message, file_type):
-    file_path = "../output_files/"
 
+
+def file_convert(decoded_message, file_path, file_type):
+    
     if file_type == "text":
-        file_path += "text_output.txt"
-        with open(file_path, "wb") as file:
-            file.write(decoded_message)
+        file_path += "/StegTextOutput.txt"
+        try:
+            with open(file_path, "x") as file:
+                file.write(decoded_message)
+        except FileExistsError:
+
+            with open(file_path, "w+") as file:
+                file.write(decoded_message) 
     
     elif file_type == "pdf":
-        file_path += "pdf_output.pdf"
-    
-    try :
-        if file_path != "../output_files/":
-            return file_path
-    except Exception as e:
-        print(f"Error Saving File: {e}")
-
-
+        file_path += "/StegPDFOutput.pdf"  
+        try: 
+            with open(file_path, "x") as file: 
+                file.write(decoded_message)
+        except FileExistsError:
+            with open(file_path, "w+"):
+                file.write(decoded_message)
 
         
