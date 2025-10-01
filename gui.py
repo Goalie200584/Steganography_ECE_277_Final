@@ -141,6 +141,7 @@ class textEncodePage(tk.Frame):
         if self.controller.file_path_var.get() == "No File Selected.":
             self.no_image_selected.pack()
         else:
+            print("Starting to embed text")
             self.no_image_selected.pack_forget()
             text = self.text_box.get("1.0", tk.END)
             text = encrypt_and_decrypt.XOR_cipher(text, secret_key)
@@ -288,9 +289,11 @@ class DislodgePage(tk.Frame):
             self.no_image_selected.pack_forget()
             dislodge_path = self.controller.file_path_var.get()
             img_bin_decode = convert_to_dislodge.convert_img_to_binary(dislodge_path)
-            bin_text = uncover_binary.uncover_info(img_bin_decode)
+            print(img_bin_decode)
+            bin_text, file_type = uncover_binary.uncover_info(img_bin_decode)
             decoded_message = convert_bin_to_text.convert_to_text(bin_text)
             decoded_message = encrypt_and_decrypt.XOR_cipher(decoded_message, secret_key)
+            save_file.file_covert(decoded_message, file_type)
 
             self.dislodged_message.set(f"Decoded Message: {decoded_message}")
             self.decoded_message_label.pack()

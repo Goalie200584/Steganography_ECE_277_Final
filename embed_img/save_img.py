@@ -25,7 +25,6 @@ def save_img(img_path:str, img_bin:list):
 
     temp_path = img_path.split("/")[:-1]
     temp_path.append("embedded_img.png")
-    print(temp_path)
     img_output_path = "/".join(temp_path)
 
     embedded_image = Image.fromarray(original)

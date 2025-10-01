@@ -15,7 +15,6 @@ def embed_message(text_bin:list, img_bin:list) -> list:
     text_bin.append("10101010")
 
     for letter in text_bin:
-        # print(letter)
         #2. Identifies and embeds all Binary numbers from text
         for bit in letter:
             #3. Replaces the LSB in our RGB value with the next sequential binary number from text

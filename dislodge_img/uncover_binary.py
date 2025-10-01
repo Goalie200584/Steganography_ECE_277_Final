@@ -19,7 +19,11 @@ def uncover_info(img_bin:np.array)-> list:
                     # and returns the whole binary message 
                 elif len(current_letter) == 8: 
                     if current_letter == "10101010" and bin_message[-1] == "10101010":
-                        return bin_message[:-1]
+                        if bin_message[0] == "00000001":
+                            file_type = "text"
+                        elif bin_message[0] == "00000010":
+                            file_type = "pdf"
+                        return bin_message[1:-1], file_type
                     else:
                         bin_message.append(current_letter)
                         current_letter = bin[-1]
