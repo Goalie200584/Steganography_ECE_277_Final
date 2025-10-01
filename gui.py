@@ -11,6 +11,7 @@ import dislodge_img.convert_bin_to_text as convert_bin_to_text
 import encrypt_and_decrypt
 import embed_img.PSNR as PSNR
 import embed_img.PDF_to_binary as PDF_to_binary
+import dislodge_img.save_file as save_file
 
 secret_key = "PYTHONRULES"
 # Creates Class og StegApp to Call from main.py
@@ -290,16 +291,21 @@ class DislodgePage(tk.Frame):
             dislodge_path = self.controller.file_path_var.get()
             img_bin_decode = convert_to_dislodge.convert_img_to_binary(dislodge_path)
             bin_text, file_type = uncover_binary.uncover_info(img_bin_decode)
-            decoded_message = convert_bin_to_text.convert_to_text(bin_text)
-            decoded_message = encrypt_and_decrypt.XOR_cipher(decoded_message, secret_key)
-            
             if file_type == "text":
-
-                self.dislodged_message.set(f"Decoded Message: {decoded_message}")
+                decoded_message = convert_bin_to_text.convert_to_text(bin_text)
+                decoded_message = encrypt_and_decrypt.XOR_cipher(decoded_message, secret_key)
+                output_path = save_file.file_convert(decoded_message, file_type)
+                self.dislodged_message.set(f"Decoded Message: {decoded_message[:10]}... Please refer to {output_path} for the full text")
                 self.decoded_message_label.pack()
-            else:
-                save_file.file_convert(decoded_message, file_type)
-        
+
+            elif file_type in ["pdf"]:
+                output_path = save_file.file_convert(bin_text, file_type)
+                self.dislodged_message.set(f"File saved as a {file_type} file. Please Reference {output_path}")
+                self.dislodged_message_label.pack()
+            
+            
+
+
     def go_back(self):
         self.controller.show_frame("HomePage")
         self.no_image_selected.pack_forget()
