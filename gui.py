@@ -246,6 +246,7 @@ class fileEmbedPage(tk.Frame):
     def finish_embedding(self):
         self.done_label.pack_forget()
         self.PSNR_lab.pack_forget()
+        self.file_to_embed.set("No File Selected.")
         self.controller.show_frame("HomePage")
 
     def go_back(self):
@@ -261,7 +262,7 @@ class DislodgePage(tk.Frame):
         self.controller = controller
         self.dislodged_message = tk.StringVar()
         self.output_dir_string = tk.StringVar()
-        self.output_dir_string.set("No Output Directory Selected.")
+        self.output_dir_string.set("/home/carsonpalmer/Classes/fall_2025/ECE_277/Steganography_ECE_277_Final/output_files")
         
         back_button = tk.Button(self, text="Back", command=self.go_back)
         back_button.pack(side=tk.TOP, anchor=tk.W)
@@ -320,6 +321,7 @@ class DislodgePage(tk.Frame):
                 self.decoded_message_label.pack()
 
             elif file_type in ["pdf"]:
+                print('Entering Into pdf CONVERSION')
                 save_file.file_convert(bin_text, output_path, file_type)
                 self.dislodged_message.set(f"File saved as a {file_type} file. Please Reference {output_path}")
                 self.dislodged_message_label.pack()
@@ -331,7 +333,7 @@ class DislodgePage(tk.Frame):
         self.controller.show_frame("HomePage")
         self.no_image_selected.pack_forget()
         self.decoded_message_label.pack_forget()
-        self.output_dir_string.se("No Output Directory Selected.")
+        self.output_dir_string.set("No Output Directory Selected.")
 
 
     def output_dir(self):

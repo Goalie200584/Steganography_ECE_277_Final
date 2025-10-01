@@ -11,6 +11,7 @@ def uncover_info(img_bin:np.array)-> list:
     file_type = ""
     #1. Parses through each RGB value in binary form and adds each 8 bit letter we encoded
     # from the end of our RGB value until we see our indicator to stop in this case it is 10 repeated 8 times.
+    
     for row in img_bin:
         for pixel in row:
             for bin in pixel:
@@ -27,4 +28,4 @@ def uncover_info(img_bin:np.array)-> list:
                         return bin_message[1:-1], file_type
                     else:
                         bin_message.append(current_letter)
-                        current_letter = ""
+                        current_letter = bin[-1]
