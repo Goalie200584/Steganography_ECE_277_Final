@@ -24,6 +24,7 @@ def convert_img_to_binary(img_path:str, text_length:int) -> list:
     #img_area * 3 to account for all RGB values in each pixel, since we can embed 3 bits per pixel
     print(img_area*3)
     print(bits_to_embed)
+    
     if img_area * 3 < bits_to_embed:
         print("File too large to fit into this image, Crashing...")
         quit()

@@ -6,4 +6,4 @@ def get_pdf_bytes(pdf_path):
         for byte in pdf_bytes:
             bit_stream.append(f"{byte:08b}")
         
-    return bit_stream, len(bit_stream)
+    return bit_stream, len(bit_stream) * 8
