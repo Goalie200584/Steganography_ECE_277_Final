@@ -19,6 +19,7 @@ def embed_message(text_bin:list, img_bin:list) -> list:
         #2. Identifies and embeds all Binary numbers from text
         for bit in letter:
             #3. Replaces the LSB in our RGB value with the next sequential binary number from text
+            img_bin[row_count][pixel_count][RGB_count] = img_bin[row_count][pixel_count][RGB_count][:7] + bit
             #4. Tracks the index we are on for the img binary
             if RGB_count == 2:
                 RGB_count = 0
