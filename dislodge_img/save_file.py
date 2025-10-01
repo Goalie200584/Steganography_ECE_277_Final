@@ -3,3 +3,6 @@ def file_convert(decoded_message, file_type):
         return 0
     elif file_type == "pdf":
         pass
+
+
+    #Git terminal test
