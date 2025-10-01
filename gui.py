@@ -291,6 +291,8 @@ class DislodgePage(tk.Frame):
         self.decoded_message_label = tk.Label(self, textvariable=self.dislodged_message)
         self.decoded_message_label.pack_forget()
 
+        self.dislodged_message_label = tk.Label(self, textvariable=self.dislodged_message)
+
     def dislodge_secret(self):
         '''
         Begins our dislodging sequence that we would see in our main file, by calling 
